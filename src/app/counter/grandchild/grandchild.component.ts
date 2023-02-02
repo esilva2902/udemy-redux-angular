@@ -1,23 +1,30 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { Store } from '@ngrx/store';
+import { AppState } from 'src/app/app.reducers';
+import { reset } from '../counter.actions';
 
 @Component({
   selector: 'app-grandchild',
   templateUrl: './grandchild.component.html',
   styleUrls: ['./grandchild.component.scss']
 })
-export class GrandchildComponent {
+export class GrandchildComponent implements OnInit {
 
-  @Input() counter: number;
-  @Output() counterChange: EventEmitter<number>;
+  counter: number;
 
-  constructor() {
+  constructor(private store: Store<AppState>) {
     this.counter = 0;
-    this.counterChange = new EventEmitter<number>();
+  }
+
+  ngOnInit(): void {
+    this.store.select(state => state.counter)
+      .subscribe({
+        next: counter => this.counter = counter
+      });
   }
 
   reset(): void {
-    this.counter = 0;
-    this.counterChange.emit(this.counter);
+    this.store.dispatch(reset());
   }
 
 }
